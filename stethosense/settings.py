@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles', 
-    'autho',  
+    'autho',  # Make sure 'autho' is before other apps
     'user',
     'rest_framework',
     'blogs',
@@ -150,7 +150,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL = 'autho.CustomUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -168,3 +167,7 @@ AUTHENTICATION_BACKENDS = [
     'lab.auth_backends.LabUserBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+# settings.py
+
+AUTH_USER_MODEL = 'autho.CustomUser'

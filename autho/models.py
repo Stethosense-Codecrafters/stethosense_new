@@ -1,9 +1,7 @@
 import uuid
+from django.contrib.auth.models import AbstractUser, BaseUserManager, Group, Permission
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import Group, Permission
-
 
 class CustomUserManager(BaseUserManager):
     def _create_user(self, email, password=None, **extra_fields):
@@ -36,6 +34,7 @@ class CustomUser(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     mobile = models.CharField(max_length=15, null=True, blank=True)
     medical_id = models.CharField(max_length=12, unique=True, blank=True)
+    role = models.CharField(max_length=20, choices=[('user', 'User'), ('lab', 'Lab'), ('doctor', 'Doctor'), ('pharmacy', 'Pharmacy')], default='user')
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['mobile']
@@ -50,16 +49,3 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.first_name
-    groups = models.ManyToManyField(
-        Group,
-        verbose_name=_('groups'),
-        blank=True,
-        related_name='custom_users_groups'  # Add a related_name
-    )
-
-    user_permissions = models.ManyToManyField(
-        Permission,
-        verbose_name=_('user permissions'),
-        blank=True,
-        related_name='custom_users_permissions'  # Add a related_name
-    )

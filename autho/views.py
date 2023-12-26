@@ -2,18 +2,18 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+
+from lab.auth_backends import CustomUser
 from .forms import UserAdminCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .decorators import *
 from .models import *
 from django import forms
-from django. contrib import messages
 from django.urls import reverse
+from django.contrib import messages
 
-import uuid
 from user.models import HealthProfile
-
+import uuid
 
 # from django.urls import reverse_lazy
 
@@ -30,30 +30,40 @@ def home(request):
     user=request.user
     return render(request, 'index.html', {'user':user})
 
+
 @csrf_exempt
 def loginPage(request):
-    
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
-        
+
         user = authenticate(request, email=email, password=password)
 
         if user is not None:
             login(request, user)
-            try:
-                health_profile = HealthProfile.objects.get(user=user)
-                return redirect(reverse('user-home'))
-            except HealthProfile.DoesNotExist:
-                return redirect(reverse('health-profile'))
-            return redirect(reverse('home'))
+
+            # Check the user's role and redirect accordingly
+            if user.is_superuser:
+                return redirect('/admin/')
+            
+            # elif user.role == 'doctor':
+            #     return redirect(reverse('doctor_dashboard'))
+            # elif user.role == 'lab':
+            #     return redirect(reverse('lab_dashboard'))
+            # elif user.role == 'pharmacy':
+            #     return redirect(reverse('pharmacy_dashboard'))
+            else:
+                try:
+                    health_profile = HealthProfile.objects.get(user=user)
+                    return redirect(reverse('user-home'))
+                except HealthProfile.DoesNotExist:
+                    return redirect(reverse('health-profile'))
+
         else:
             messages.info(request, 'Password or Username is incorrect')
             return render(request, 'login.html')
 
     return render(request, 'login.html')
-
-
 
 
 def signup(request):

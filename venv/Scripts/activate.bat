@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\minha\OneDrive\Documents\stethosense\venv
+set VIRTUAL_ENV=C:\Users\minha\Downloads\stetho_new\stethosense_new\venv
 
 if not defined PROMPT set PROMPT=$P$G
 

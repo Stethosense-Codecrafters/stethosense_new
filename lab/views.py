@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from .forms import LabRegistrationForm, LabLoginForm
 from .models import LabUser, LabReport
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
 import random
 
 def generate_lab_id():
@@ -19,10 +21,10 @@ def lab_registration(request):
             # Save the form with the lab ID
             lab = form.save()
 
-            # You might want to log in the lab immediately after registration if required
+            # Log in the lab immediately after registration if required
             login(request, lab)
 
-            return redirect('about')  # Redirect to a success page or another URL
+            return redirect('registration_success')  # Redirect to a success page or another URL
     else:
         form = LabRegistrationForm()
 
@@ -43,7 +45,7 @@ def lab_login(request):
             if lab is not None:
                 # Login the lab
                 login(request, lab)
-                return redirect('home')  # Replace 'dashboard' with your actual dashboard URL
+                return redirect('lab_dashboard')
             else:
                 error_message = "Invalid lab ID or password. Please try again."
         else:
@@ -58,10 +60,12 @@ def lab_login(request):
 
     return render(request, 'lab_login.html', context)
 
-
-
-
+@login_required
 def lab_dashboard(request):
+    # Ensure the user has the 'lab' role
+    if request.user.role != 'lab':
+        return HttpResponseForbidden("You don't have permission to access this page.")
+
     # Assuming the user is logged in and you have access to the LabUser instance
     lab_user = request.user
 
